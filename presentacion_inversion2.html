@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inversión Pública Municipal en Chile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; 
+            background-color: #ecf0f1; 
+            color: #2c3e50; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px; 
+        }
+        .presentation-container {
+            width: 100%;
+            max-width: 1000px; 
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .slide {
+            display: none; 
+            padding: 30px 40px; 
+            min-height: 520px; 
+            animation: fadeIn 0.5s ease-in-out;
+            box-sizing: border-box; 
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1, h2, h3 {
+            color: #34495e; 
+            font-weight: 600; 
+        }
+        h1 { 
+            font-size: 2.25rem; 
+            text-align: center; 
+            margin-bottom: 1.5rem; 
+        }
+        h2 { 
+            font-size: 1.75rem; 
+            border-bottom: 2px solid #3498db; 
+            padding-bottom: 0.5rem; 
+            margin-bottom: 1.25rem; 
+        }
+        h3 { 
+            font-size: 1.25rem; 
+            color: #3498db; 
+            margin-bottom: 0.75rem; 
+            margin-top: 1.25rem; /* Added margin top for H3 */
+        }
+
+        p, ul, ol {
+            line-height: 1.6;
+            margin-bottom: 1rem; 
+        }
+        
+        ul:not([class*="icon-list"]):not([class*="bibliography-slide"]):not(.chart-container ul), ol {
+            padding-left: 25px; 
+            list-style-position: outside; 
+        }
+        li {
+            margin-bottom: 0.5rem; 
+        }
+
+        .icon-list {
+            margin-bottom: 1rem; 
+        }
+        .icon-list li {
+            display: flex;
+            align-items: flex-start; 
+            margin-bottom: 0.85rem; 
+        }
+        .icon-list i {
+            color: #3498db; 
+            margin-right: 12px; 
+            width: 20px; 
+            text-align: center;
+            margin-top: 0.1em; 
+            flex-shrink: 0; 
+        }
+        .icon-list li > div { 
+            flex: 1; 
+        }
+        .icon-list li p { 
+             margin-bottom: 0.25rem; 
+             line-height: 1.5; 
+        }
+         .icon-list li strong {
+            font-weight: 600; 
+            display: inline-block; 
+            margin-bottom: 0.15rem; 
+        }
+        
+        .icon-list li ul {
+            margin-top: 0.35rem; 
+            margin-bottom: 0.35rem; 
+            padding-left: 20px; 
+            list-style-type: disc; 
+            font-size: 0.9rem; 
+        }
+        .icon-list li ul li {
+            margin-bottom: 0.25rem; 
+        }
+        
+        #slide9 > ul:not(.icon-list) {
+            padding-left: 25px;
+            list-style-type: disc;
+        }
+        #slide9 > ul:not(.icon-list) > li {
+            margin-bottom: 0.5rem;
+        }
+        #slide9 > ul:not(.icon-list) > li > ul { 
+            padding-left: 20px;
+            list-style-type: circle; 
+            margin-top: 0.25rem;
+        }
+         #slide9 > ul:not(.icon-list) > li > ul > li {
+            margin-bottom: 0.25rem;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: #f8f9fa; 
+            border-top: 1px solid #dee2e6; 
+        }
+        .nav-button {
+            background-color: #3498db; 
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .nav-button:hover {
+            background-color: #2980b9; 
+        }
+        .nav-button:disabled {
+            background-color: #95a5a6; 
+            cursor: not-allowed;
+        }
+        .slide-counter {
+            font-size: 0.9rem;
+            color: #7f8c8d; 
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 25px auto; 
+            height: 300px; 
+        }
+        /* Specific height for factor chart on slide 5 */
+        #slide5 .chart-container {
+            height: 320px; /* Adjusted height for better display of factor chart */
+            margin-top: 1.5rem;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.25rem; 
+            margin-bottom: 1.25rem; 
+        }
+        th, td {
+            border: 1px solid #bdc3c7; 
+            padding: 10px 12px; 
+            text-align: left;
+            font-size: 0.9rem; 
+            line-height: 1.4; 
+        }
+        th {
+            background-color: #3498db; 
+            color: white;
+            font-size: 0.95rem; 
+            font-weight: 600;
+        }
+        td { 
+            background-color: #fdfefe; 
+        }
+
+        .author-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #7f8c8d; 
+            margin-top: 0.5rem;
+            margin-bottom: 2rem; 
+        }
+        .title-slide-main-title { 
+            font-size: 2.5rem; 
+            margin-bottom: 0.5rem;
+        }
+        .title-slide-author {
+            font-size: 1.5rem;
+            color: #2c3e50; 
+            margin-top: 2.5rem; /* Increased margin for author */
+            text-align: center;
+        }
+
+        .bibliography-slide ul {
+            list-style-type: disc;
+            padding-left: 25px; 
+        }
+        .bibliography-slide li {
+            margin-bottom: 0.75rem; 
+        }
+        
+        /* Slide 4 specific adjustments */
+        #slide4 .grid {
+            gap-y: 0.75rem; /* Reduced vertical gap between list items in grid */
+        }
+         #slide4 .icon-list li {
+            margin-bottom: 0.65rem; /* Tighter spacing for items in slide 4 */
+        }
+
+
+        @media (max-width: 768px) {
+            .slide { padding: 20px; min-height: 480px; } /* Adjusted min-height */
+            h1 { font-size: 1.9rem; margin-bottom: 1.25rem; }
+            h2 { font-size: 1.55rem; margin-bottom: 1rem; }
+            h3 { font-size: 1.15rem; margin-bottom: 0.65rem; margin-top: 1rem;}
+            p, ul, ol { margin-bottom: 0.85rem; }
+            li { margin-bottom: 0.4rem; }
+            .icon-list li { margin-bottom: 0.75rem; }
+            .icon-list i { margin-right: 10px;}
+            .chart-container { height: 250px; margin: 20px auto; }
+            #slide5 .chart-container { height: 280px; }
+            .navigation-buttons { padding: 15px 20px;}
+            .nav-button { padding: 8px 15px; font-size: 0.9rem;}
+            th, td { padding: 8px; font-size: 0.85rem;}
+        }
+         @media (max-width: 480px) {
+            .slide { padding: 20px 15px; min-height: 450px; } 
+            h1 { font-size: 1.7rem; margin-bottom: 1rem; }
+            h2 { font-size: 1.35rem; margin-bottom: 0.85rem; }
+            h3 { font-size: 1.1rem; margin-bottom: 0.5rem; margin-top: 0.85rem;}
+            p, ul, ol { margin-bottom: 0.75rem; }
+            li { margin-bottom: 0.35rem; }
+            .icon-list li { margin-bottom: 0.65rem; }
+            .chart-container { height: 220px; margin: 15px auto; } 
+            #slide5 .chart-container { height: 250px; }
+            th, td { padding: 6px; font-size: 0.8rem;}
+            .navigation-buttons { padding: 12px 15px;}
+            .nav-button { padding: 7px 12px; font-size: 0.85rem;}
+        }
+
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide active" id="slide1">
+            <h1 class="title-slide-main-title">Caracterización Comunal y Distribución de la Inversión Pública Municipal en Chile</h1>
+            <p class="author-subtitle">Un Análisis Integral Basado en Investigaciones Recientes</p>
+            <p class="title-slide-author">Autor: Luis Alvear Candia</p>
+            </div>
+
+        <div class="slide" id="slide2">
+            <h2><i class="fas fa-info-circle" style="margin-right: 8px;"></i>Introducción</h2>
+            <p>El presente análisis sintetiza y profundiza en la información contenida en diversos estudios sobre la caracterización de las comunas chilenas y la distribución de la inversión pública a nivel municipal.</p>
+            <p>El enfoque principal se centra en tres dimensiones clave:</p>
+            <ul class="icon-list">
+                <li><i class="fas fa-balance-scale"></i><div><strong>Igualdad:</strong> Cómo se distribuyen los recursos de inversión per cápita entre comunas.</div></li>
+                <li><i class="fas fa-bullseye"></i><div><strong>Focalización:</strong> Si la inversión se dirige a territorios con mayor necesidad o vulnerabilidad.</div></li>
+                <li><i class="fas fa-check-circle"></i><div><strong>Equidad:</strong> La justicia general del sistema de inversión municipal.</div></li>
+            </ul>
+            <p>Comprender estas dinámicas es crucial para el diseño de políticas públicas efectivas y la promoción del desarrollo territorial equilibrado.</p>
+        </div>
+
+        <div class="slide" id="slide3">
+            <h2><i class="fas fa-cogs" style="margin-right: 8px;"></i>Metodología de Caracterización Comunal</h2>
+            <p>El objetivo fundamental de la caracterización es ir más allá de comparaciones verticales (comuna vs. región/país) para permitir la <strong>comparación horizontal</strong> entre comunas, agrupándolas en perfiles similares.</p>
+            <h3>Técnicas Estadísticas Multivariantes:</h3>
+            <ul class="icon-list">
+                <li>
+                    <i class="fas fa-chart-bar"></i>
+                    <div>
+                        <strong>Análisis Factorial:</strong>
+                        <p>Se utiliza para analizar un conjunto de variables de forma multidimensional, descubriendo la estructura subyacente y definiendo "factores" latentes que explican la varianza en los datos. Esto mejora la interpretación de los grupos.</p>
+                    </div>
+                </li>
+                <li>
+                    <i class="fas fa-project-diagram"></i>
+                    <div>
+                        <strong>Análisis de Conglomerados (Cluster Analysis):</strong>
+                        <p>Una vez definidos los factores, esta técnica agrupa las comunas en conglomerados homogéneos según sus similitudes. Las comunas dentro de un grupo son internamente semejantes y los grupos son distinguibles entre sí.</p>
+                    </div>
+                </li>
+            </ul>
+            <p>Esta metodología facilita la comprensión de las realidades comunales y sirve como herramienta para la toma de decisiones en políticas públicas, ayudando a la focalización de recursos.</p>
+        </div>
+
+        <div class="slide" id="slide4">
+            <h2><i class="fas fa-clipboard-list" style="margin-right: 8px;"></i>Variables para la Caracterización</h2>
+            <p>Se utilizó un set final de <strong>27 variables</strong>, distribuidas en diversas dimensiones para describir y clasificar las comunas:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6"> 
+                <ul class="icon-list">
+                    <li><i class="fas fa-users"></i><div><strong>Demográficos:</strong> Proyección población, Índice Masculinidad, Dependencia Demográfica, Adultos Mayores.</div></li>
+                    <li><i class="fas fa-hand-holding-heart"></i><div><strong>Sociales:</strong> Tasa pobreza (ingresos/multidimensional), Pueblos originarios, Personas extranjeras.</div></li>
+                    <li><i class="fas fa-notes-medical"></i><div><strong>Salud:</strong> % población en FONASA, % población FONASA grupo A o B.</div></li>
+                    <li><i class="fas fa-user-graduate"></i><div><strong>Educación:</strong> Años escolaridad promedio, % matrícula municipal y SLEP.</div></li>
+                </ul>
+                <ul class="icon-list">
+                    <li><i class="fas fa-industry"></i><div><strong>Económicos:</strong> % ocupados por rama actividad (Primarios/Terciarios).</div></li>
+                    <li><i class="fas fa-landmark"></i><div><strong>Municipales:</strong> Disponibilidad presupuestaria/Hab, Ingresos propios per cápita, Participación impuestos, % predios exentos.</div></li>
+                    <li><i class="fas fa-shield-alt"></i><div><strong>Seguridad:</strong> Tasa denuncias DMCS, Tasa denuncias VIF.</div></li>
+                    <li><i class="fas fa-home"></i><div><strong>Vivienda:</strong> % Hogares con Hacinamiento, % Viviendas Materialidad Irrecuperable, % Hogares acceso Agua Potable.</div></li>
+                </ul>
+            </div>
+             <p class="mt-4">Estas variables provienen principalmente del Reporte Comunal 2021 y otras fuentes complementarias.</p>
+        </div>
+
+        <div class="slide" id="slide5">
+            <h2><i class="fas fa-key" style="margin-right: 8px;"></i>Factores Identificados</h2>
+            <p>El Análisis Factorial permitió identificar <strong>5 factores principales</strong> que resumen las características comunales:</p>
+            <ol style="list-style-type: decimal; padding-left: 25px; margin-bottom: 1.5rem;">
+                <li><strong>Población Masculina Laboralmente Activa</strong></li>
+                <li><strong>Independencia Presupuestaria Municipal</strong></li>
+                <li><strong>Ruralidad</strong></li>
+                <li><strong>Precariedad de Viviendas</strong></li>
+                <li><strong>Ingreso por Impuesto Territorial</strong></li>
+            </ol>
+            <div class="chart-container">
+                 <canvas id="factorChart"></canvas>
+            </div>
+            <p class="text-sm text-center text-gray-600 mt-2">Estos factores fueron la base para el análisis de conglomerados y la creación de perfiles comunales.</p>
+        </div>
+
+        <div class="slide" id="slide6">
+            <h2><i class="fas fa-users-cog" style="margin-right: 8px;"></i>Perfiles Comunales: Agrupación (Ejemplos)</h2>
+            <p>Basándose en los factores, se agruparon las comunas. Aquí algunos ejemplos:</p>
+            
+            <h3>Agrupación por Factor 1 (Población Masculina Laboralmente Activa) - 5 Grupos</h3>
+            <ul style="list-style-type: disc; padding-left: 25px;">
+                <li><strong>Grupo 1 (Muy baja PML Activa):</strong> 72 comunas. Ejemplos: Canela, Punitaqui, Río Hurtado, Putaendo.</li>
+                <li><strong>Grupo 5 (Muy alta PML Activa):</strong> 7 comunas. Ejemplos: Ollagüe, Laguna Blanca, Río Verde, San Gregorio.</li>
+            </ul>
+
+            <h3 style="margin-top: 1.5rem;">Agrupación por Factor 2 (Indep. Presupuestaria) y Factor 3 (Ruralidad) - 5 Grupos</h3>
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Prom. F2 (Indep.)</th>
+                            <th>Prom. F3 (Rural.)</th>
+                            <th>N° Comunas</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>1.2</td><td>1.4</td><td>38</td><td>Muy rurales con gran Independencia presupuestaria</td></tr>
+                        <tr><td>2</td><td>-1.0</td><td>-0.7</td><td>65</td><td>Urbanas sin Independencia presupuestaria</td></tr>
+                        <tr><td>3</td><td>1.7</td><td>-1.2</td><td>31</td><td>Muy urbanas con gran Independencia presupuestaria</td></tr>
+                        <tr><td>4</td><td>-0.4</td><td>0.6</td><td>138</td><td>Rurales sin Independencia presupuestaria</td></tr>
+                        <tr><td>5</td><td>0.3</td><td>-0.7</td><td>71</td><td>Urbanas con Independencia presupuestaria</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" id="slide7">
+            <h2><i class="fas fa-university" style="margin-right: 8px;"></i>Sistema de Inversión Pública Municipal</h2>
+            <ul class="icon-list">
+                <li><i class="fas fa-coins"></i><div><strong>Financiamiento:</strong> Recursos propios de los municipios y recursos externos (transferencias de otras entidades).</div></li>
+                <li><i class="fas fa-tasks"></i>
+                    <div><strong>Evaluación de Iniciativas (IDI):</strong>
+                        <ul>
+                            <li><em>Recursos Externos:</em> Evaluación ex-ante por entidad adjudicadora (Resultado Satisfactorio - RS - es requisito).</li>
+                            <li><em>Recursos Propios:</em> Verificación ex-post por Contraloría (RS no es requisito previo).</li>
+                        </ul>
+                    </div>
+                </li>
+                <li><i class="fas fa-sitemap"></i><div><strong>Sistema Nacional de Inversiones (SNI) y Banco Integrado de Proyectos (BIP):</strong> Plataformas centrales para gestión y seguimiento.</div></li>
+                <li><i class="fas fa-balance-scale-left"></i>
+                    <div><strong>Rol Municipal (Procesos 2023-2024):</strong>
+                        <p style="margin-bottom:0.1rem;">Formulan el <strong>37%</strong> de las iniciativas ingresadas al SNI.</p>
+                        <p style="margin-bottom:0;">Financian directamente solo el <strong>0,7%</strong> de estas iniciativas.</p>
+                    </div>
+                </li>
+            </ul>
+            <div class="chart-container" style="height:280px;">
+                <canvas id="municipalRoleChart"></canvas>
+            </div>
+            <p><strong>Desafíos:</strong> Retrasos considerables en respuestas a observaciones durante la evaluación de proyectos (falta de personal, dificultades de información, capacidades técnicas).</p>
+        </div>
+
+        <div class="slide" id="slide8">
+            <h2><i class="fas fa-search-dollar" style="margin-right: 8px;"></i>Evaluación de la Inversión: Igualdad y Focalización</h2>
+            <p>Se evalúa si la distribución de la inversión pública municipal es adecuada mediante dos dimensiones clave:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-4">
+                <div>
+                    <h3><i class="fas fa-equals" style="margin-right: 5px;"></i>Igualdad</h3>
+                    <p>Mide la distribución <strong>per cápita</strong> de la inversión en cada comuna.</p>
+                    <p><strong>Métricas utilizadas:</strong></p>
+                    <ul style="list-style-type: disc; padding-left: 25px; font-size:0.95rem;">
+                        <li>Coeficiente de variabilidad</li>
+                        <li>Coeficiente de Gini</li>
+                        <li>Coeficiente de Palma</li>
+                        <li>Razón de quintiles (ej. 20/20)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3><i class="fas fa-crosshairs" style="margin-right: 5px;"></i>Focalización</h3>
+                    <p>Evalúa si se asignan <strong>recursos adicionales</strong> a territorios con mayor necesidad o vulnerabilidad.</p>
+                    <p><strong>Metodología:</strong></p>
+                    <ul style="list-style-type: disc; padding-left: 25px; font-size:0.95rem;">
+                        <li>Comparación de la inversión con variables proxy de vulnerabilidad (pobreza por ingresos, pobreza multidimensional) y de aislamiento.</li>
+                        <li>Clasificación de municipios en quintiles según indicadores sociales.</li>
+                        <li>Análisis de correlación (Coef. Pearson) y modelos de regresión.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide9">
+            <h2><i class="fas fa-chart-line" style="margin-right: 8px;"></i>Resultados: Distribución Inversión (2009-2016)</h2>
+            <p>Estudio "Distribución-territorial-del-gasto-público..."</p>
+            <ul>
+                <li><strong>Volúmenes Totales:</strong> Considerados <strong>insuficientes</strong> para generar un impacto significativo en el desarrollo territorial.</li>
+                <li><strong>Inversión Total Per Cápita Promedio:</strong> $18.0 millones CLP.
+                    <ul>
+                        <li>Alta variabilidad: Coeficiente de Variabilidad (C.V.) del <strong>643%</strong>.</li>
+                        <li>Alta desigualdad: Coeficiente de Gini de <strong>0.52</strong>.</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3 style="margin-top:1.5rem;">Desigualdad por Fuente de Financiamiento (Coeficiente de Gini):</h3>
+            <div class="chart-container" style="height:250px;">
+                <canvas id="giniChart"></canvas>
+            </div>
+            <ul style="margin-top:1.5rem;">
+                <li><strong>Focalización:</strong> La distribución del gasto en inversión tendió a <strong>replicar la estructura de la desigualdad inicial</strong> de las fuentes de ingresos municipales. No se observó relación clara entre iniciativas elegibles (RS) y variables de vulnerabilidad.</li>
+                <li><strong>Conclusión General (2009-2016):</strong> La distribución territorial de los recursos para inversión pública municipal fue <strong>inadecuada</strong>.</li>
+            </ul>
+        </div>
+        
+        <div class="slide" id="slide10">
+            <h2><i class="fas fa-analytics" style="margin-right: 8px;"></i>Resultados: Distribución Inversión (2011-2020) y Otros Hallazgos</h2>
+            <p>Estudio "DISTRIBUCIÓN DE LA INVERSIÓN PÚBLICA DE ÁMBITO MUNICIPAL..."</p>
+            <ul class="icon-list">
+                <li><i class="fas fa-link"></i><div><strong>Correlaciones:</strong> Variadas. Se observa correlación negativa entre algunas medidas de vulnerabilidad y la inversión propia per cápita.</div></li>
+                <li><i class="fas fa-drafting-compass"></i><div><strong>Modelos Explicativos:</strong> Se identificaron variables que explican el presupuesto municipal (IPP), predictoras de la estructura de inversión con recursos propios.</div></li>
+                <li><i class="fas fa-compress-arrows-alt"></i><div><strong>Desigualdad de Fuentes:</strong> Financiamiento propio y externo son altamente desiguales, pero su estructura opuesta se atenúa al sumarse en la inversión total (aunque esta sigue siendo considerablemente desigual).</div></li>
+                <li><i class="fas fa-city"></i>
+                    <div><strong>Calidad de Vida Urbana (ICVU):</strong>
+                        <ul>
+                            <li>Inversión municipal per cápita se correlaciona positivamente con ICVU (Coef. Pearson <strong>0.71</strong>, diferencial vs promedio regional).</li>
+                            <li>Ciudades metropolitanas tienden a inversión pública per cápita <em>por debajo</em> del promedio nacional.</li>
+                            <li>Municipios más dependientes del Fondo Común Municipal (FCM) tienden a mostrar <em>menor</em> calidad de vida urbana.</li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="slide" id="slide11">
+            <h2><i class="far fa-file-alt" style="margin-right: 8px;"></i>Resultados: Distribución de Proyectos (Informe SNI 2023)</h2>
+            <p>Instantánea de la cartera de iniciativas de inversión municipal (procesos presupuestarios 2023 y 2024, datos a dic. 2023).</p>
+            <ul class="icon-list">
+                <li><i class="fas fa-tasks"></i>
+                    <div><strong>Rol Municipal en SNI:</strong>
+                        <ul>
+                            <li>Formulan el <strong>37%</strong> de las iniciativas.</li>
+                            <li>Financian solo el <strong>0,7%</strong> de estas. (Reiteración del dato, importante).</li>
+                        </ul>
+                    </div>
+                </li>
+                <li><i class="fas fa-check-double"></i><div><strong>Tasa de Obtención RATE RS:</strong> Promedio del <strong>34%</strong> para el período 2021-2023.</div></li>
+                <li><i class="fas fa-wallet"></i>
+                    <div><strong>Cartera de Iniciativas (Montos Solicitados):</strong>
+                        <ul>
+                            <li><em>Nuevas en evaluación (FI, OT):</em> 455 IDI, Costo Total <strong>$1.381.630 Millones</strong>.</li>
+                            <li><em>Nuevas con RATE RS sin asignación:</em> Costo Total <strong>$644.620 Millones</strong>.</li>
+                            <li><em>En ejecución (arrastre):</em> Varía por región (ej. de 7 a 68 proyectos).</li>
+                        </ul>
+                    </div>
+                </li>
+                <li><i class="fas fa-hand-holding-usd"></i><div><strong>Dependencia:</strong> Alta dependencia de fuentes de financiamiento externas (ej. F.N.D.R.).</div></li>
+            </ul>
+             <p>El informe destaca la importancia de las municipalidades como formuladoras, pero su limitada capacidad de financiamiento directo.</p>
+        </div>
+
+        <div class="slide" id="slide12">
+            <h2><i class="fas fa-microscope" style="margin-right: 8px;"></i>Síntesis y Contraste de Resultados</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mt-4">
+                <div>
+                    <h3><i class="fas fa-map-marked-alt" style="margin-right: 5px;"></i>Diversidad Comunal</h3>
+                    <p>Los perfiles comunales identificados (mediante Análisis Factorial y de Conglomerados) demuestran una <strong>gran heterogeneidad</strong> en las realidades demográficas, sociales, económicas y de vivienda a lo largo de Chile.</p>
+                    <p>Esto sugiere la necesidad de políticas y asignaciones de recursos <strong>diferenciadas y adaptadas</strong>.</p>
+                </div>
+                <div>
+                    <h3><i class="fas fa-exchange-alt" style="margin-right: 5px;"></i>Inversión Pública Municipal</h3>
+                    <p>A pesar de la diversidad comunal, los análisis de la distribución de la inversión (períodos 2009-2016 y 2011-2020) concluyen que esta ha sido, en general:</p>
+                    <ul style="list-style-type: disc; padding-left: 25px; font-size:0.95rem;">
+                        <li><strong>Desigual.</strong></li>
+                        <li><strong>No ha logrado una focalización efectiva</strong> en comunas con mayores necesidades.</li>
+                        <li>Tiende a <strong>reflejar las desigualdades preexistentes</strong> en los ingresos municipales.</li>
+                    </ul>
+                </div>
+            </div>
+            <h3 class="mt-6"><i class="fas fa-puzzle-piece" style="margin-right: 5px;"></i>Conclusión General del Contraste:</h3>
+            <p>Existe una <strong>brecha significativa</strong> entre el conocimiento detallado de la diversidad comunal y la capacidad del sistema actual de inversión pública para asignar recursos de manera equitativa y focalizada según esas realidades diferenciadas.</p>
+            <p>Los desafíos operativos y la estructura de financiamiento contribuyen a esta situación.</p>
+        </div>
+
+        <div class="slide" id="slide13">
+            <h2><i class="fas fa-lightbulb" style="margin-right: 8px;"></i>Conclusiones y Observaciones de Política Pública</h2>
+            <p>Los hallazgos sugieren la necesidad de reformas y mejoras en el sistema de inversión pública municipal:</p>
+            <ul class="icon-list">
+                <li><i class="fas fa-arrow-up"></i><div><strong>Incrementar la inversión fiscal total</strong> y decidir su canalización (municipal o transferencias).</div></li>
+                <li><i class="fas fa-eye"></i><div>Incorporar <strong>controles externos</strong> a la inversión municipal financiada con fondos propios (ej. integrar evaluación al SNI).</div></li>
+                <li><i class="fas fa-tools"></i><div>Estandarizar y mejorar las <strong>capacidades de formulación de proyectos</strong> por parte de los municipios.</div></li>
+                <li><i class="fas fa-link"></i><div>Incrementar la <strong>coordinación</strong> entre planes de desarrollo regional y fondos concursables a nivel municipal.</div></li>
+                <li><i class="fas fa-database"></i>
+                    <div><strong>Mejorar la información disponible:</strong>
+                        <ul>
+                            <li>Establecer objetivos cuantitativos de inversión (diferenciando igualdad vs. focalización).</li>
+                            <li>Enriquecer datos sobre recursos adjudicados y propios (desagregar por sector).</li>
+                            <li>Unificar sistemas de información para evaluación social de iniciativas.</li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <p><strong>En resumen:</strong> A pesar de las competencias decisionales a nivel municipal, el sistema de distribución de la inversión pública no está logrando sus objetivos potenciales de igualdad y focalización, replicando en gran medida las desigualdades de origen en las fuentes de financiamiento.</p>
+        </div>
+
+        <div class="slide bibliography-slide" id="slide14">
+            <h2><i class="fas fa-book" style="margin-right: 8px;"></i>Bibliografía Principal</h2>
+            <p>Esta presentación se basa en la información contenida en los siguientes documentos y fuentes:</p>
+            <ul>
+                <li>Perfiles_Comunales_Caracterizacion_Comunas_de_Chile-3.pdf</li>
+                <li>Distribución-territorial-del-gasto-público-en-iniciativas-de-inversión-del-nivel-municipal.pdf</li>
+                <li>DISTRIBUCIÓN DE LA INVERSIÓN PÚBLICA DE ÁMBITO MUNICIPAL... <em>(Título según provisto en el informe base)</em></li>
+                <li>Informe_Inversion_Municipal_2023.pdf</li>
+                <li>Reporte Comunal 2021 (como fuente de datos para la caracterización)</li>
+                <li>Descarga de documentosen: https://drive.google.com/drive/folders/1_TRpZ5OdSKQ6wJx81pM-t6phaFndZVal?usp=sharing</li>
+            </ul>
+            <p class="mt-6 text-sm text-gray-600">La interpretación y síntesis de estos documentos son responsabilidad del autor de esta presentación.</p>
+        </div>
+
+        <div class="navigation-buttons">
+            <button id="prevBtn" class="nav-button" onclick="changeSlide(-1)" disabled><i class="fas fa-arrow-left"></i> Anterior</button>
+            <span class="slide-counter" id="slideCounter">Diapositiva 1 / 14</span>
+            <button id="nextBtn" class="nav-button" onclick="changeSlide(1)">Siguiente <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const slideCounter = document.getElementById('slideCounter');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+            currentSlide = index;
+            updateNavButtons();
+            updateSlideCounter();
+            
+            if (slides[index].id === 'slide5' && document.getElementById('factorChart')) initFactorChart();
+            if (slides[index].id === 'slide7' && document.getElementById('municipalRoleChart')) initMunicipalRoleChart();
+            if (slides[index].id === 'slide9' && document.getElementById('giniChart')) initGiniChart();
+        }
+
+        function changeSlide(n) {
+            showSlide(currentSlide + n);
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+        
+        function updateSlideCounter() {
+            slideCounter.textContent = `Diapositiva ${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        function initFactorChart() {
+            const ctx = document.getElementById('factorChart').getContext('2d');
+            if (window.factorChartInstance) {
+                window.factorChartInstance.destroy();
+            }
+            window.factorChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Pobl. Masculina Activa', 
+                        'Indep. Presupuestaria', 
+                        'Ruralidad', 
+                        'Precariedad Viviendas', 
+                        'Ingreso Imp. Territorial'
+                    ],
+                    datasets: [{
+                        label: 'Importancia Relativa del Factor (Ilustrativo)',
+                        data: [25, 20, 18, 22, 15], // Illustrative data
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Horizontal bar chart for better label readability
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Valor Ilustrativo (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Representación Visual de Factores Identificados',
+                            font: { size: 14, weight: '600' },
+                            padding: { top: 10, bottom: 15 }
+                        },
+                        legend: {
+                            display: false 
+                        }
+                    }
+                }
+            });
+        }
+
+        function initMunicipalRoleChart() {
+            const ctx = document.getElementById('municipalRoleChart').getContext('2d');
+            if (window.municipalChartInstance) { 
+                window.municipalChartInstance.destroy();
+            }
+            window.municipalChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Formulación de Iniciativas', 'Financiamiento Directo'],
+                    datasets: [{
+                        label: '% Realizado por Municipios',
+                        data: [37, 0.7],
+                        backgroundColor: ['#3498db', '#e74c3c'], 
+                        borderColor: ['#2980b9', '#c0392b'],
+                        borderWidth: 1
+                    },
+                    {
+                        label: '% Realizado por Otros / Otras Fuentes',
+                        data: [100-37, 100-0.7],
+                        backgroundColor: ['#bdc3c7', '#bdc3c7'], 
+                        borderColor: ['#95a5a6', '#95a5a6'],    
+                        borderWidth: 1
+                    }
+                ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                     indexAxis: 'y', 
+                    scales: {
+                        x: {
+                            stacked: true, 
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + "%"
+                                }
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Rol Municipal en Iniciativas SNI (Procesos 2023-2024)',
+                            font: { size: 14, weight: '600' },
+                            padding: { top: 10, bottom:15}
+                        },
+                         tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) { 
+                                        label += context.parsed.x.toFixed(1) + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function initGiniChart() {
+            const ctx = document.getElementById('giniChart').getContext('2d');
+             if (window.giniChartInstance) { 
+                window.giniChartInstance.destroy();
+            }
+            window.giniChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Inversión Total Per Cápita', 'Inversión con Fondos Propios', 'Inversión con Fondos Externos'],
+                    datasets: [{
+                        label: 'Coeficiente de Gini (2009-2016)',
+                        data: [0.52, 0.65, 0.57],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.75)', 
+                            'rgba(231, 76, 60, 0.75)',  
+                            'rgba(46, 204, 113, 0.75)'  
+                        ],
+                        borderColor: [
+                            'rgba(41, 128, 185, 1)',
+                            'rgba(192, 57, 43, 1)',
+                            'rgba(39, 174, 96, 1)'
+                        ],
+                        borderWidth: 1.5 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 0.75, 
+                            title: {
+                                display: true,
+                                text: 'Coeficiente de Gini'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Desigualdad en Inversión Municipal Per Cápita (Gini)',
+                            font: { size: 14, weight: '600' },
+                             padding: { top: 10, bottom:15}
+                        },
+                        legend: {
+                            display: false 
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize first slide
+        showSlide(0);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const h2s = document.querySelectorAll('.slide h2');
+            h2s.forEach(h2 => {
+                const iconElement = h2.querySelector('i.fas, i.far');
+                if (iconElement) {
+                    iconElement.style.marginRight = '10px'; 
+                    iconElement.style.fontSize = '0.9em'; 
+                }
+            });
+            const iconListItems = document.querySelectorAll('.icon-list > li');
+            iconListItems.forEach(item => {
+                const icon = item.querySelector('i');
+                let textWrapper = item.querySelector('div');
+                if (icon && !textWrapper) {
+                    textWrapper = document.createElement('div');
+                    while (icon.nextSibling) {
+                        textWrapper.appendChild(icon.nextSibling);
+                    }
+                    item.appendChild(textWrapper);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
